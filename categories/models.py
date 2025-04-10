@@ -2,11 +2,12 @@ from django.db import models
 from django.forms import ValidationError
 from users.models import User
 
-class Categories(models.Model):
+class Category(models.Model):
     CATEGORY = [
         ('income', 'Доходы'),
         ('expense', 'Расходы'),
         ('deposit', 'Депозит'),
+        ('investment', 'Инвестиции'),
         ('debt', 'Долг'),
         ]
     
@@ -49,11 +50,15 @@ class SubCategory(models.Model):
             ('Travel and leisure', 'Путешествия и отдых'),
             ('Cosmetology and hairdressing', 'Косметология и парикмахерская'),
             ('Education', 'Образование'),
-            ('Other work and services', 'Другие работы и услуги'),
+            ('Other work and services', 'Прочие работы и услуги'),
         ],
         'deposit': [
             ('deposit_increase', 'Пополнение депозита'),
-            ('deposit_withdrawal', 'Снятие с депозита'),
+            ('deposit_decrease', 'Снятие с депозита'),
+        ],
+        'investment': [
+            ('investment_increase', 'Приобретение инвестиций'),
+            ('investment_decrease', 'Продажа инвестактивов'),
         ],
         'debt': [
             ('Increase short-term debt (up to 12 months)', 'Увеличение краткосрочного долга (до 12 месяцев)'),
@@ -63,7 +68,7 @@ class SubCategory(models.Model):
         ],
     }
     subcategory = models.CharField('Тип операции', max_length=100)
-    category = models.ForeignKey(Categories, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     
     def __str__(self):
         return self.subcategory
