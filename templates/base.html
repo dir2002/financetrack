@@ -43,7 +43,7 @@
             <div class="container-fluid d-flex justify-content-between align-items-center">
                 <a class="navbar-brand" href="#">
                     <img src="{% static 'logo-round.png' %}" alt="Логотип" width="70" height="70" class="me-2">
-                    <strong class="fs-3 text-dark">Finance Tracker</strong>
+                    <strong class="fs-3 text-dark">Financetracker</strong>
                 </a>
                 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -55,16 +55,19 @@
                 <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                     <ul class="navbar-nav gap-3">
                         <li class="nav-item">
-                            <a class="nav-link fs-5 fw-semibold" href="#"><strong style="font-weight: 500;">Профиль</strong></a>
+                            <a class="nav-link fs-5 fw-semibold" href="{% url 'profile' %}"><strong style="font-weight: 500;">Главная</strong></a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link fs-5 fw-semibold" href="#"><strong style="font-weight: 500;">Операции</strong></a>
+                            <a class="nav-link fs-5 fw-semibold" href="#"><strong style="font-weight: 500;">Транзакции</strong></a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link fs-5 fw-semibold" href="#"><strong style="font-weight: 500;">Бюджет</strong></a>
+                            <a class="nav-link fs-5 fw-semibold" href="#"><strong style="font-weight: 500;">Бюджет и лимиты</strong></a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link fs-5 fw-semibold text-danger" href="#"><strong style="font-weight: 500;">Войти</strong></a>
+                            <a class="nav-link fs-5 fw-semibold" href="#"><strong style="font-weight: 500;">Рекомендации</strong></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fs-5 fw-semibold text-danger" href="{% url 'logout' %}"><strong style="font-weight: 500;">Выйти</strong></a>
                         </li>
                     </ul>
                 </div>

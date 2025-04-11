@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block title %}Профиль пользователя{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-3">
+    <div class="row g-4">
+  
+      <!-- 1. Профиль -->
+      <div class="col-md-6">
+        <div class="card shadow-sm p-4">
+          <div class="text-center">
+            <h4 class="mb-4">Профиль пользователя ID: {{ user.id }}</h4>
+          </div>
+  
+          {% if user.avatar %}
+            <div class="text-center mb-3">
+              <img src="{{ user.avatar.url }}" class="rounded-circle" width="120" height="120" alt="Аватар">
+            </div>
+          {% endif %}
+  
+          <div class="text-center">
+            <h5 class="mb-4"><strong>{{ user.username }}</strong></h5>
+          </div>
+  
+          <ul class="list-group mb-4">
+            <li class="list-group-item"><strong>Имя:</strong> {{ user.first_name }}</li>
+            <li class="list-group-item"><strong>Фамилия:</strong> {{ user.last_name }}</li>
+            <li class="list-group-item"><strong>Email:</strong> {{ user.email }}</li>
+            <li class="list-group-item"><strong>Телефон:</strong> {{ user.phone_number }}</li>
+            <li class="list-group-item"><strong>Следит за финансами с нами:</strong> {{ days_since_joined }} дней</li>
+          </ul>
+  
+          <div class="text-center mt-4">
+            <a href="{% url 'profile_update' %}" class="btn btn-outline-dark">Редактировать личные данные</a>
+          </div>
+        </div>
+      </div>
+  
+      <!-- 2. Плитка -->
+      <div class="col-md-6">
+        <div class="card shadow-sm p-4" style="background: linear-gradient(135deg, #e0f7fa, #ccf2f4);">
+          <div class="text-center my-5">
+            <h4 class="mb-3">Карточка 2</h4>
+            <p class="text-muted">Здесь будет дополнительная информация</p>
+          </div>
+        </div>
+      </div>
+  
+      <!-- 3. Плитка -->
+      <div class="col-md-6">
+        <div class="card shadow-sm p-3" style="background: linear-gradient(135deg, #f1f8e9, #dcedc8);">
+          <div class="text-center mb-3">
+            <h4 class="mb-2">Финансовый статус</h4>
+            <p class="text-muted fs-6">на {{ today|date:"d.m.Y" }}</p>
+          </div>
+      
+          <ul class="list-group mb-3 fs-6">
+            <li class="list-group-item d-flex justify-content-between">
+              <strong>Сумма наличных денег:</strong>
+              <span>{{ user_profile.cash_amount }} ₸</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <strong>На депозитных счетах:</strong>
+              <span>{{ user_profile.deposit_amount }} ₸</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <strong>В инвестиционном имуществе:</strong>
+              <span>{{ user_profile.investment_amount }} ₸</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <strong>Краткосрочный долг:</strong>
+              <span>{{ user_profile.short_term_debt }} ₸</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+              <strong>Долгосрочный долг:</strong>
+              <span>{{ user_profile.long_term_debt }} ₸</span>
+            </li>
+          </ul>
+      
+          <div class="text-center mt-3">
+            <a href="#" class="btn btn-outline-dark">Редактировать финансовые данные</a>
+          </div>
+        </div>
+      </div>
+  
+      <!-- 4. Плитка -->
+      <div class="col-md-6">
+        <div class="card shadow-sm p-4" style="background: linear-gradient(135deg, #fff8e1, #ffecb3);">
+          <div class="text-center my-5">
+            <h4 class="mb-3">Карточка 4</h4>
+            <p class="text-muted">Здесь будет дополнительная информация</p>
+          </div>
+        </div>
+      </div>
+  
+    </div>
+  </div>
+{% endblock %}

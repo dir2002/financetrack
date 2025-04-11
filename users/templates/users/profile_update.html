@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block title %}Редактирование данных{% endblock %}
+
+{% block content %}
+    <h3 class="mb-4 text-center">Редактирование данных пользователя</h3>
+    
+    <div class="container d-flex justify-content-center">
+        <div class="col-md-8 bg-white p-4 rounded shadow-sm">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <a href="{% url 'password_change' %}">Изменить пароль пользователя</a>
+                <br>
+                <br>
+                <div class="d-flex flex-column align-items-center gap-2">
+                    <button type="submit" class="btn login-btn" style="background-color: #7fae82; color: black; font-weight: 600; border: 3px solid black;">Сохранить изменения</button>
+                    <a href="{% url 'profile' %}" class="btn btn-outline-dark">Отмена</a>
+                </div>
+                
+            </form>
+        </div>
+    </div>
+    
+{% endblock %}

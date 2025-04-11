@@ -1,3 +1,5 @@
+
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="ru">
@@ -19,7 +21,7 @@
             color: #000;
         }
         .fw-normal {
-            font-size: 1rem;
+            font-size: 0.9%rem;
             color:rgb(77, 122, 80);
             text-decoration: none;
            
@@ -42,20 +44,15 @@
             <img src="{% static 'logo-round.png' %}" alt="Логотип" class="logo mb-2">
             <p class="tagline"><strong>Financetracker </strong> помогает вам легко и удобно управлять своими финансами, способствуя росту вашего благосостояния.</p>
         </div>
-
-      
         <div class="col-md-4">
             <div class="card shadow-sm p-4">
-                <form method="POST" action="#">
+                <form method="POST">
                     {% csrf_token %}
-                    <div class="mb-4">
-                        <input type="email" name="email" class="form-control" placeholder="Электронный адрес" required>
-                    </div>
-                    <div class="mb-4">
-                        <input type="password" name="password" class="form-control" placeholder="Пароль" required>
-                    </div>
+                    {{ form.as_p }}
+                    
+                     
                     <div class="d-grid mb-3">
-                        <button type="login" class="btn login-btn" style="background-color: #7fae82; color: black; font-weight: 600; border: 3px solid black;">Войти</button>
+                        <button type="submit" class="btn login-btn" style="background-color: #7fae82; color: black; font-weight: 600; border: 3px solid black;">Войти</button>
                     </div>
         
                     <div class="text-center mb-3">
@@ -70,7 +67,7 @@
                     </div>
                 </form>
             </div>
-        </div>
+        </div> 
     </div>
 </div>
 <footer style="position: fixed; bottom: 0; width: 100%; background-color: #f8f9fa;">

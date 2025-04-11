@@ -132,18 +132,12 @@
                 <p class="tagline">Создайте свой аккаунт в <strong>Financetracker</strong>.<br> Заполните нашу регистрационную форму - это очень быстро и просто.</p>
             </div>
                 
-            <div class="col-md-8 bg-white p-4 rounded shadow-sm">
+            <div class="col-md-4 bg-white p-4 rounded shadow-sm">
                 <h5 class="header-text text-center mb-4">РЕГИСТРАЦИОННАЯ ФОРМА</h5>
                 <form method="POST" action="{% url 'register' %}" enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="table-responsive">
                             <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th class="text-center" style="width: 50%;">Основные данные <br> о пользователе</th>
-                                        <th class="text-center" style="width: 50%;">Дополнительные данные <br> (заполнить при наличии)</th>
-                                    </tr>
-                                </thead>
                                 <tbody>
                                     <tr>
                                         <td>
@@ -157,6 +151,9 @@
                                                 {{ form.phone_number }}
                                             </div>
                                             <div class="mb-3">
+                                                {{ form.username }}
+                                            </div>
+                                            <div class="mb-3">
                                                 {{ form.email }}
                                             </div>
                                             <div class="mb-3">
@@ -165,25 +162,8 @@
                                             <div class="mb-3">
                                                 {{ form.password2 }}
                                             </div>
-                                        </td>
-                                        <td>
                                             <div class="mb-3">
-                                                {{ form.cash_start_saldo }}
-                                            </div>
-                                            <div class="mb-3">
-                                                {{ form.deposit_start_saldo }}
-                                            </div>
-                                            <div class="mb-3">
-                                                {{ form.investment_start_saldo }}
-                                            </div>
-                                            <div class="mb-3">
-                                                {{ form.short_debt_start_saldo }}
-                                            </div>
-                                            <div class="mb-3">
-                                                {{ form.long_debt_start_saldo }}
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="avatar" class="form-label">Загрузите аватар</label>
+                                                <label for="avatar" class="form-label">Загрузите свой аватар</label>
                                                 {{ form.avatar }}
                                             </div>
                                         </td>
@@ -203,7 +183,7 @@
                             </div>
                         {% endif %}
 
-                                                
+                       <p style="font-size: 12px;">Нажимая кнопку "Зарегистрироваться", вы принимаете наши Условия использования, Политику конфиденциальности и <br> Политику в отношении файлов cookie.</p>                         
                         <div class="mb-3 text-center">
                             <button type="submit" class="btn login-btn" style="background-color: #7fae82; color: black; font-weight: 600; border: 3px solid black;">Зарегистрироваться</button>
                         </div>               
