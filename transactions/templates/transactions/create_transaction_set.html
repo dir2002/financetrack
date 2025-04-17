@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block title %}Создать группу транзакций{% endblock %}
+
+{% block content %}
+
+<h3 class="mb-4 text-center">Добавить транзакции</h3>
+
+<div class="container d-flex justify-content-center">
+  <div class="col-md-8 bg-white p-4 rounded shadow-sm">
+    <form method="post" id="transaction-form">
+      {% csrf_token %}
+      {{ formset.management_form }}
+
+      <div id="form-container">
+        {% for form in formset %}
+        <div class="form-block border p-3 mb-2 rounded position-relative">
+          {{ form.as_p }}
+          <button type="button" class="btn btn-danger btn-sm remove-form">Удалить форму</button>
+        </div>
+        {% endfor %}
+      </div>
+
+      <button type="button" class="btn btn-outline-primary" id="add-form">Добавить форму</button>
+      <br /><br />
+
+      <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
+        <button type="submit"
+                class="btn btn-outline-success"
+                style="min-width: 140px;">
+            Сохранить
+        </button>
+    
+                        
+        <a href="{% url 'profile' %}"
+           class="btn btn-outline-dark"
+           style="min-width: 140px;">
+            Отмена
+        </a>
+    </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const subcategoriesData = {
+            {% for category in categories %}
+                "{{ category.id }}": [
+                    {% for subcategory in category.subcategories.all %}
+                        { "id": "{{ subcategory.id }}", "name": "{{ subcategory.name }}" },
+                    {% endfor %}
+                ],
+            {% endfor %}
+        };
+                   
+        function updateSubcategories(categorySelect, subcategorySelect) {
+            const selectedCategoryId = categorySelect.value.toString();
+            subcategorySelect.innerHTML = '<option value="">Выберите подкатегорию</option>';
+    
+            if (subcategoriesData[selectedCategoryId]) {
+                subcategoriesData[selectedCategoryId].forEach(subcategory => {
+                    const option = document.createElement("option");
+                    option.value = subcategory.id;
+                    option.textContent = subcategory.name;
+                    subcategorySelect.appendChild(option);
+                });
+    
+                subcategorySelect.value = subcategorySelect.options.length > 1
+                    ? subcategorySelect.options[1].value
+                    : "";
+            }
+    
+            setTimeout(() => subcategorySelect.dispatchEvent(new Event("change")), 10);
+        }
+    
+        function applyCategoryChangeHandler(form) {
+            const categorySelect = form.querySelector("select[name$='category']");
+            const subcategorySelect = form.querySelector("select[name$='subcategory']");
+            categorySelect.addEventListener("change", () => updateSubcategories(categorySelect, subcategorySelect));
+        }
+    
+        document.querySelectorAll(".form-block").forEach(form => {
+            applyCategoryChangeHandler(form);
+        });
+    
+        const formContainer = document.getElementById("form-container");
+        const addFormButton = document.getElementById("add-form");
+        const totalForms = document.getElementById("id_form-TOTAL_FORMS");
+    
+        addFormButton.addEventListener("click", function() {
+            let formCount = parseInt(totalForms.value);
+            
+            if (formCount < 8) {
+                let newForm = formContainer.children[0].cloneNode(true);
+                
+                newForm.querySelectorAll("input, select").forEach(field => field.value = "");
+                newForm.innerHTML = newForm.innerHTML.replace(/form-(\d+)/g, `form-${formCount}`);
+                newForm.classList.add("form-block");
+    
+                applyCategoryChangeHandler(newForm);
+    
+                let removeButton = newForm.querySelector(".remove-form");
+                removeButton.addEventListener("click", function() {
+                    if (document.querySelectorAll(".form-block").length > 1) {
+                        this.closest(".form-block").remove();
+                        totalForms.value = parseInt(totalForms.value) - 1;
+                    } else {
+                        alert("Должна быть хотя бы одна форма!");
+                    }
+                });
+    
+                formContainer.appendChild(newForm);
+                totalForms.value = formCount + 1;
+            } else {
+                alert("Одновременно можно создавать не более 8 транзакций");
+            }
+        });
+    
+        document.querySelectorAll(".remove-form").forEach(button => {
+            button.addEventListener("click", function() {
+                if (document.querySelectorAll(".form-block").length > 1) {
+                    this.closest(".form-block").remove();
+                    totalForms.value = parseInt(totalForms.value) - 1;
+                } else {
+                    alert("Нажмите на кнопку 'Отмена' для отмены создания транзакций");
+                }
+            });
+        });
+    });
+    
+</script>
+
+{% endblock %}

@@ -1,0 +1,32 @@
+[
+    {"model": "transactions.category", "pk": 1, "fields": {"name": "Доходы"}},
+    {"model": "transactions.category", "pk": 2, "fields": {"name": "Расходы"}},
+    {"model": "transactions.category", "pk": 3, "fields": {"name": "Депозит"}},
+    {"model": "transactions.category", "pk": 4, "fields": {"name": "Инвестиции"}},
+    {"model": "transactions.category", "pk": 5, "fields": {"name": "Долг"}},
+
+    {"model": "transactions.subcategory", "pk": 1, "fields": {"name": "Зарплата", "category": 1}},
+    {"model": "transactions.subcategory", "pk": 2, "fields": {"name": "Доходы от депозита", "category": 1}},
+    {"model": "transactions.subcategory", "pk": 3, "fields": {"name": "Прочие поступления", "category": 1}},
+
+    {"model": "transactions.subcategory", "pk": 4, "fields": {"name": "Продукты питания и гигиена", "category": 2}},
+    {"model": "transactions.subcategory", "pk": 5, "fields": {"name": "Одежда и обувь", "category": 2}},
+    {"model": "transactions.subcategory", "pk": 6, "fields": {"name": "Аксессуары", "category": 2}},
+    {"model": "transactions.subcategory", "pk": 7, "fields": {"name": "Спорттовары и инвентарь", "category": 2}},
+    {"model": "transactions.subcategory", "pk": 8, "fields": {"name": "Товары для дома", "category": 2}},
+    {"model": "transactions.subcategory", "pk": 9, "fields": {"name": "Товары для детей", "category": 2}},
+    {"model": "transactions.subcategory", "pk": 10, "fields": {"name": "Товары для животных", "category": 2}},
+    {"model": "transactions.subcategory", "pk": 11, "fields": {"name": "Мебель и интерьер", "category": 2}},
+    {"model": "transactions.subcategory", "pk": 12, "fields": {"name": "Электроника", "category": 2}},
+
+    {"model": "transactions.subcategory", "pk": 13, "fields": {"name": "Пополнение депозита", "category": 3}},
+    {"model": "transactions.subcategory", "pk": 14, "fields": {"name": "Снятие с депозита", "category": 3}},
+
+    {"model": "transactions.subcategory", "pk": 15, "fields": {"name": "Приобретение инвестиций", "category": 4}},
+    {"model": "transactions.subcategory", "pk": 16, "fields": {"name": "Продажа инвестактивов", "category": 4}},
+
+    {"model": "transactions.subcategory", "pk": 17, "fields": {"name": "Увеличение краткосрочного долга (до 12 месяцев)", "category": 5}},
+    {"model": "transactions.subcategory", "pk": 18, "fields": {"name": "Уменьшение краткосрочного долга (до 12 месяцев)", "category": 5}},
+    {"model": "transactions.subcategory", "pk": 19, "fields": {"name": "Увеличение долга (более 12 месяцев)", "category": 5}},
+    {"model": "transactions.subcategory", "pk": 20, "fields": {"name": "Уменьшение долга (более 12 месяцев)", "category": 5}}
+]

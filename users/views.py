@@ -11,9 +11,13 @@ from django.views.generic.edit import UpdateView
 
 from .forms import CustomUserCreationForm, CustomUserLoginForm, CustomUserChangeForm
 from .models import EmailActivation, User
+from transactions.models import Category, Transaction
+from transactions.utils import get_opening_balance_context
+from transactions.forms import TransactionForm
 
 def register_done_view(request):
     return render(request, 'users/register_done.html')
+
 
 def index_view(request):
     if request.method == 'POST':
@@ -51,17 +55,44 @@ def login_error_view(request):
         form = CustomUserLoginForm()
     return render(request, 'users/login_error.html', {'form': form})
 
+# Хендлер для обработки транзакции
+def handle_transaction(request):
+    form = TransactionForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        transaction = form.save(commit=False)
+        transaction.user = request.user
+        transaction.save()
+        return TransactionForm()  
+    return form 
+
+
+@login_required
 def profile_view(request):
     user = request.user
     days_since_joined = (timezone.now().date() - user.date_joined.date()).days
     today = date.today()
-    user_profile = getattr(user, 'userprofile', None)  
+    user_profile = getattr(user, 'userprofile', None)
+    categories = Category.objects.prefetch_related('subcategories').all()
 
-    return render(request, 'users/profile.html', {
-        'user': user,
+    form = handle_transaction(request)
+
+    user_level = (
+        'Транжира' if days_since_joined <= 3 else
+        'Финансовый теоретик' if days_since_joined <= 5 else
+        'Коммерсант' if days_since_joined <= 10 else
+        'Финансовый гуру'
+    )
+
+    context = {'user': user,
         'days_since_joined': days_since_joined,
         'today': today,
-        'user_profile': user_profile,})
+        'user_profile': user_profile,
+        'user_level': user_level,
+        "form": form,
+        'categories': categories,}
+
+    context.update(get_opening_balance_context(user))
+    return render(request, 'users/profile.html', context)
 
 class RegisterView(FormView):
     template_name = "users/register.html"
@@ -89,6 +120,7 @@ def activate_user_view(request, token: str):
 
     return redirect('index')
 
+@login_required
 def logout_view(request):
     logout(request)
     return redirect('index')
@@ -101,3 +133,6 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_object(self):
         return self.request.user
+    
+    def form_valid(self, form):
+        return super().form_valid(form)

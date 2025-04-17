@@ -3,10 +3,10 @@
 {% load static %}
 
 
-{% block title %}Редактирование личных данных{% endblock %}
+{% block title %}Редактирование входящих остатков{% endblock %}
 
 {% block content %}
-    <h3 class="mb-4 text-center">Редактирование данных пользователя</h3>
+    <h3 class="mb-4 text-center">Редактирование входящих остатков</h3>
     
     <div class="container d-flex justify-content-center">
         <div class="col-md-8 bg-white p-4 rounded shadow-sm">
@@ -23,7 +23,9 @@
                     </div>
                 {% endfor %}
                 </div>
-                <a href="{% url 'password_change' %}">Изменить пароль пользователя</a>
+                <p class="text-muted mb-4">
+                    Последнее обновление данных: {{ object.date_saldo_update|date:"d.m.Y H:i" }}
+                </p>
                 
                 <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
                     <button type="submit"

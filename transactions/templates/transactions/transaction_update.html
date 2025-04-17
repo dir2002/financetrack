@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}Редактирование ID #{{ object.id }}{% endblock %}
+
+{% block content %}
+    
+<h3 class="mb-4 text-center">Редактирование транзакции ID #{{ object.id }}</h3>
+    
+<div class="container d-flex justify-content-center">
+    <div class="col-md-8 bg-white p-4 rounded shadow-sm">
+
+        <form method="POST" action="{% url 'transaction_update' object.id %}" class="d-flex flex-column align-items-center">
+            {% csrf_token %}
+            <div>
+                {% for field in form %}
+                    <div class="mb-3">
+                        {{ field.label_tag }}
+                        {{ field|add_class:"form-control" }}
+                        {% if field.errors %}
+                            <div class="text-danger">{{ field.errors }}</div>  
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+  
+            <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
+                <button type="submit"
+                        class="btn btn-outline-success"
+                        style="min-width: 140px;">
+                    Сохранить
+                </button>
+
+                <a href="{% url 'find_transaction' %}"
+                        class="btn btn-outline-dark"
+                        style="min-width: 140px;">
+                    Назад
+                </a>
+            </div>
+        </form>
+        
+
+        <hr>
+
+        <div class="text-center my-4">
+            <h6 class="fw-normal">
+                В случае необходимости вы можете удалить транзакцию. <br> Помните, операцию <strong>отменить невозможно</strong>.
+            </h6>
+        </div>
+
+
+        <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
+            <a href="{% url 'transaction_delete' object.id %}"
+               class="btn btn-outline-danger"
+               style="min-width: 140px;">
+                Удалить транзакцию
+            </a>
+        </div>
+
+        {% if error_message %}
+            <div class="text-center mt-2">
+                <div class="alert alert-danger py-2 px-3 d-inline-block">
+                    {{ error_message }}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

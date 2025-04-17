@@ -41,7 +41,7 @@
         
         <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #faf4e4; border-bottom: 0.5px solid #757981;">
             <div class="container-fluid d-flex justify-content-between align-items-center">
-                <a class="navbar-brand" href="#">
+                <a class="navbar-brand" href="{% url 'profile' %}">
                     <img src="{% static 'logo-round.png' %}" alt="Логотип" width="70" height="70" class="me-2">
                     <strong class="fs-3 text-dark">Financetracker</strong>
                 </a>
@@ -58,7 +58,7 @@
                             <a class="nav-link fs-5 fw-semibold" href="{% url 'profile' %}"><strong style="font-weight: 500;">Главная</strong></a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link fs-5 fw-semibold" href="#"><strong style="font-weight: 500;">Транзакции</strong></a>
+                            <a class="nav-link fs-5 fw-semibold" href="{% url 'transactions_list' %}"><strong style="font-weight: 500;">Транзакции</strong></a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link fs-5 fw-semibold" href="#"><strong style="font-weight: 500;">Бюджет и лимиты</strong></a>
@@ -86,7 +86,7 @@
 
         
         <footer>
-            <div class="text-center p-3">
+            <div class="text-center p-1">
                 <strong>© 2025 Financetracker.</strong> Все права защищены.
             </div>
         </footer>

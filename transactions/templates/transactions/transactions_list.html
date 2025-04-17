@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% load static %}
+
+
+{% block title %}Список транзакций{% endblock %}
+
+{% block content %}
+{% block extra_css %}
+    <style>
+    .pagination .page-link {
+        background-color: white;
+        color: black;
+        border: none;
+        margin: 0 2px;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: black;
+        color: white;
+    }
+
+    .pagination .page-item.disabled .page-link {
+        background-color: white;
+        color: black;
+        pointer-events: none;
+    }
+    </style>
+{% endblock %}
+{% comment %} <form method="get" class="container mt-4">
+    <div class="row g-3 align-items-end">
+        <div class="col-md-3">
+            <label for="category" class="form-label">Выберите категорию</label>
+            <select name="category" id="category" class="form-select">
+                <option value="">Все категории</option>
+                {% for category in categories %}
+                    <option value="{{ category.id }}">{{ category.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label for="subcategory" class="form-label">Выберите подкатегорию</label>
+            <select name="subcategory" id="subcategory" class="form-select">
+                <option value="">Все подкатегории</option>
+                {% for category in categories %}
+                    {% for subcategory in category.subcategories.all %}
+                        <option value="{{ subcategory.id }}" data-category="{{ category.id }}">{{ subcategory.name }}</option>
+                    {% endfor %}
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    
+    <div class="row g-3 align-items-end mt-1">
+        <div class="col-md-3">
+          <label class="form-label">Выберите период</label>
+          <div class="input-group">
+            <input type="date" name="start_date" class="form-control">
+            <span class="input-group-text">—</span>
+            <input type="date" name="end_date" class="form-control">
+          </div>
+        </div>
+      
+        <div class="col-md-3">
+          <label class="form-label">Сумма</label>
+          <div class="input-group">
+            <input type="number" name="min_amount" class="form-control">
+            <span class="input-group-text">—</span>
+            <input type="number" name="max_amount" class="form-control">
+          </div>
+        </div>
+      
+        <div class="col-md-3">
+          <label for="search" class="form-label">Введите описание</label>
+          <input type="text" name="search" id="search" class="form-control">
+        </div>
+      
+        <div class="col-auto">
+          <button type="submit" class="btn btn-secondary" style="min-width: 140px;">Поиск</button>
+        </div>
+
+        <div class="col-auto">
+            <a href="{% url 'find_transaction' %}"
+                 class="btn btn-outline-dark"
+                 style="min-width: 140px;">
+                  Редактировать
+              </a>
+        </div>
+      </div> {% endcomment %}
+
+
+
+
+</form>
+
+<div class="container mt-4">
+    <h2 class="mb-4">Список транзакций</h2>
+
+<nav aria-label="Page navigation" class="d-flex justify-content-center mt-4">
+        <ul class="pagination">
+      
+          {% if transactions.has_previous %}
+            <li class="page-item">
+              <a class="page-link bg-white text-black" href="?page=1" aria-label="Первая">
+                <span aria-hidden="true">&laquo;&laquo;</span>
+              </a>
+            </li>
+            <li class="page-item">
+              <a class="page-link bg-white text-black" href="?page={{ transactions.previous_page_number }}" aria-label="Назад">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+          {% else %}
+            <li class="page-item disabled">
+              <span class="page-link bg-white text-black">&laquo;&laquo;</span>
+            </li>
+            <li class="page-item disabled">
+              <span class="page-link bg-white text-black">&laquo;</span>
+            </li>
+          {% endif %}
+      
+          {% for num in transactions.paginator.page_range %}
+            {% if transactions.number == num %}
+              <li class="page-item active">
+                <span class="page-link bg-black text-white">{{ num }}</span>
+              </li>
+            {% elif num >= transactions.number|add:"-2" and num <= transactions.number|add:"2" %}
+              <li class="page-item">
+                <a class="page-link bg-white text-black" href="?page={{ num }}">{{ num }}</a>
+              </li>
+            {% endif %}
+          {% endfor %}
+      
+          {% if transactions.has_next %}
+            <li class="page-item">
+              <a class="page-link bg-white text-black" href="?page={{ transactions.next_page_number }}" aria-label="Вперёд">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+            <li class="page-item">
+              <a class="page-link bg-white text-black" href="?page={{ transactions.paginator.num_pages }}" aria-label="Последняя">
+                <span aria-hidden="true">&raquo;&raquo;</span>
+              </a>
+            </li>
+          {% else %}
+            <li class="page-item disabled">
+              <span class="page-link bg-white text-black">&raquo;</span>
+            </li>
+            <li class="page-item disabled">
+              <span class="page-link bg-white text-black">&raquo;&raquo;</span>
+            </li>
+          {% endif %}
+      
+        </ul>
+</nav>
+
+    <div id="transaction-results">  <!-- ✅ Исправил: добавил `id` для AJAX -->
+        <table class="table table-striped table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Категория</th>
+                    <th scope="col">Подкатегория</th>
+                    <th scope="col">Сумма</th>
+                    <th scope="col">Дата</th>
+                    <th scope="col">Описание</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in transactions %}
+                    <tr>
+                        <td>{{ transaction.id }}</td>
+                        <td>{{ transaction.category.name }}</td>
+                        <td>{{ transaction.subcategory.name }}</td>
+                        <td>{{ transaction.amount }}</td>
+                        <td>{{ transaction.date|date:"d.m.Y" }}</td>
+                        <td>{{ transaction.description }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">Транзакций пока нет.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<br>
+
+<nav aria-label="Page navigation" class="d-flex justify-content-center mt-4">
+            <ul class="pagination">
+          
+              {% if transactions.has_previous %}
+                <li class="page-item">
+                  <a class="page-link bg-white text-black" href="?page=1" aria-label="Первая">
+                    <span aria-hidden="true">&laquo;&laquo;</span>
+                  </a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link bg-white text-black" href="?page={{ transactions.previous_page_number }}" aria-label="Назад">
+                    <span aria-hidden="true">&laquo;</span>
+                  </a>
+                </li>
+              {% else %}
+                <li class="page-item disabled">
+                  <span class="page-link bg-white text-black">&laquo;&laquo;</span>
+                </li>
+                <li class="page-item disabled">
+                  <span class="page-link bg-white text-black">&laquo;</span>
+                </li>
+              {% endif %}
+          
+              {% for num in transactions.paginator.page_range %}
+                {% if transactions.number == num %}
+                  <li class="page-item active">
+                    <span class="page-link bg-black text-white">{{ num }}</span>
+                  </li>
+                {% elif num >= transactions.number|add:"-2" and num <= transactions.number|add:"2" %}
+                  <li class="page-item">
+                    <a class="page-link bg-white text-black" href="?page={{ num }}">{{ num }}</a>
+                  </li>
+                {% endif %}
+              {% endfor %}
+          
+              {% if transactions.has_next %}
+                <li class="page-item">
+                  <a class="page-link bg-white text-black" href="?page={{ transactions.next_page_number }}" aria-label="Вперёд">
+                    <span aria-hidden="true">&raquo;</span>
+                  </a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link bg-white text-black" href="?page={{ transactions.paginator.num_pages }}" aria-label="Последняя">
+                    <span aria-hidden="true">&raquo;&raquo;</span>
+                  </a>
+                </li>
+              {% else %}
+                <li class="page-item disabled">
+                  <span class="page-link bg-white text-black">&raquo;</span>
+                </li>
+                <li class="page-item disabled">
+                  <span class="page-link bg-white text-black">&raquo;&raquo;</span>
+                </li>
+              {% endif %}
+          
+            </ul>
+</nav>
+    
+{% endblock %}

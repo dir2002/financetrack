@@ -1,101 +1,204 @@
-{% extends 'base.html' %}
-{% load static %}
+{% extends 'base.html' %} 
+{% load static humanize %} 
 
-
-{% block title %}Профиль пользователя{% endblock %}
+{% block title %}Профиль пользователя{% endblock %} 
 
 {% block content %}
-<div class="container-fluid mt-3">
-    <div class="row g-4">
-  
-      <!-- 1. Профиль -->
-      <div class="col-md-6">
-        <div class="card shadow-sm p-4">
-          <div class="text-center">
-            <h4 class="mb-4">Профиль пользователя ID: {{ user.id }}</h4>
-          </div>
-  
-          {% if user.avatar %}
-            <div class="text-center mb-3">
-              <img src="{{ user.avatar.url }}" class="rounded-circle" width="120" height="120" alt="Аватар">
-            </div>
-          {% endif %}
-  
-          <div class="text-center">
-            <h5 class="mb-4"><strong>{{ user.username }}</strong></h5>
-          </div>
-  
+<div class="container-fluid" style="margin-top: -50px;">
+  <div class="row g-4">
+    <!-- 1. Профиль -->
+    <div class="col-md-6">
+      <div class="card shadow-sm p-4" style= "height: 660px">
+        <div class="text-center">
+          <h4 class="mb-4">Профиль пользователя ID: {{ user.id }}</h4>
+        </div>
+
+        {% if user.avatar %}
+        <div class="text-center mb-3">
+          <img
+            src="{{ user.avatar.url }}"
+            class="rounded-circle"
+            width="120"
+            height="120"
+            alt="Аватар"
+          />
+        </div>
+        {% endif %}
+
+        <div class="text-center">
+          <h5 class="mb-4"><strong>{{ user.username }}</strong></h5>
+        </div>
+
+        <div style="width: 80%; margin: 0 auto">
           <ul class="list-group mb-4">
-            <li class="list-group-item"><strong>Имя:</strong> {{ user.first_name }}</li>
-            <li class="list-group-item"><strong>Фамилия:</strong> {{ user.last_name }}</li>
-            <li class="list-group-item"><strong>Email:</strong> {{ user.email }}</li>
-            <li class="list-group-item"><strong>Телефон:</strong> {{ user.phone_number }}</li>
-            <li class="list-group-item"><strong>Следит за финансами с нами:</strong> {{ days_since_joined }} дней</li>
+            <li class="list-group-item">
+              <strong>Имя:</strong> {{ user.first_name }}
+            </li>
+            <li class="list-group-item">
+              <strong>Фамилия:</strong> {{ user.last_name }}
+            </li>
+            <li class="list-group-item">
+              <strong>Email:</strong> {{ user.email }}
+            </li>
+            <li class="list-group-item">
+              <strong>Телефон:</strong> {{ user.phone_number }}
+            </li>
+            <li class="list-group-item">
+              <strong>Следит за финансами с нами:</strong> {{ days_since_joined }} дней
+            </li>
+            <li class="list-group-item">
+              <strong>Уровень пользователя:</strong> {{ user_level }}
+            </li>
           </ul>
-  
-          <div class="text-center mt-4">
-            <a href="{% url 'profile_update' %}" class="btn btn-outline-dark">Редактировать личные данные</a>
-          </div>
+        </div>
+
+        <div class="text-center mt-3">
+          <a href="{% url 'profile_update' %}" class="btn btn-outline-dark"
+            >Редактировать личные данные</a
+          >
         </div>
       </div>
-  
-      <!-- 2. Плитка -->
-      <div class="col-md-6">
-        <div class="card shadow-sm p-4" style="background: linear-gradient(135deg, #e0f7fa, #ccf2f4);">
-          <div class="text-center my-5">
-            <h4 class="mb-3">Карточка 2</h4>
-            <p class="text-muted">Здесь будет дополнительная информация</p>
-          </div>
+    </div>
+
+    <!-- 2. Плитка -->
+    <div class="col-md-6">
+      <div class="card shadow-sm p-4" style="background: linear-gradient(135deg, #e0f7fa, #ccf2f4); height: 660px" >
+        <div class="text-center mb-3">
+          <h4 class="mb-2">Добавить транзакцию</h4>
         </div>
-      </div>
-  
-      <!-- 3. Плитка -->
-      <div class="col-md-6">
-        <div class="card shadow-sm p-3" style="background: linear-gradient(135deg, #f1f8e9, #dcedc8);">
-          <div class="text-center mb-3">
-            <h4 class="mb-2">Финансовый статус</h4>
-            <p class="text-muted fs-6">на {{ today|date:"d.m.Y" }}</p>
+
+        <div class="container d-flex justify-content-center">
+          
+          <div class="col-md-10 bg-white p-4 rounded shadow-sm mt-4"  style="height: 430px;">
+            <form method="post">
+              {% csrf_token %} 
+              {{ form.as_p }}
+              <div class="d-flex justify-content-center gap-3 mt-3 flex-wrap">
+              <button type="submit"
+                      class="btn btn-outline-success"
+                      style="min-width: 140px;">
+                  Добавить транзакцию
+              </button>
+              </div>
+              <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
+              <a href="{% url 'create_transaction_set' %}"
+                 class="btn btn-outline-secondary"
+                 style="min-width: 140px;">
+                  Добавить группу транзакций
+              </a>
+          
+              <a href="{% url 'find_transaction' %}"
+                 class="btn btn-outline-dark"
+                 style="min-width: 140px;">
+                  Изменить транзакцию
+              </a>
+            </div>
+            
+          </form>
+            
           </div>
-      
+        
+        </div>
+        
+                
+      </div>
+    </div>
+
+    <!-- 3. Плитка -->
+    <div class="col-md-6 mb-3">
+      <div
+        class="card shadow-sm p-3"
+        style="background: linear-gradient(135deg, #f1f8e9, #dcedc8); height: 450px"
+      >
+        <div class="text-center mb-3">
+          <h4 class="mb-2">Активы и пассивы пользователя</h4>
+          <p class="text-muted fs-6">по состоянию на {{ today|date:"d.m.Y" }}</p>
+        </div>
+
+        <div style="width: 80%; margin: 0 auto">
           <ul class="list-group mb-3 fs-6">
             <li class="list-group-item d-flex justify-content-between">
               <strong>Сумма наличных денег:</strong>
-              <span>{{ user_profile.cash_amount }} ₸</span>
+              <strong>{{ cash_start_saldo|intcomma }} ₸</strong>
             </li>
             <li class="list-group-item d-flex justify-content-between">
-              <strong>На депозитных счетах:</strong>
-              <span>{{ user_profile.deposit_amount }} ₸</span>
+              <strong>Сумма на депозитных счетах:</strong>
+              <strong>{{ deposit_start_saldo|intcomma }} ₸</strong>
             </li>
             <li class="list-group-item d-flex justify-content-between">
-              <strong>В инвестиционном имуществе:</strong>
-              <span>{{ user_profile.investment_amount }} ₸</span>
+              <strong>Сумма в инвестиционном имуществе:</strong>
+              <strong>{{ investment_start_saldo|intcomma }} ₸</strong>
             </li>
             <li class="list-group-item d-flex justify-content-between">
               <strong>Краткосрочный долг:</strong>
-              <span>{{ user_profile.short_term_debt }} ₸</span>
+              <strong>{{ short_debt_start_saldo|intcomma }} ₸</strong>
             </li>
             <li class="list-group-item d-flex justify-content-between">
               <strong>Долгосрочный долг:</strong>
-              <span>{{ user_profile.long_term_debt }} ₸</span>
+              <strong>{{ long_debt_start_saldo|intcomma }} ₸</strong>
             </li>
           </ul>
-      
-          <div class="text-center mt-3">
-            <a href="#" class="btn btn-outline-dark">Редактировать финансовые данные</a>
-          </div>
+        </div>
+
+        <div class="text-center mt-3">
+          <a href="{% url 'balance_update' %}" class="btn btn-outline-dark"
+            >Редактировать начальные данные</a
+          >
         </div>
       </div>
-  
-      <!-- 4. Плитка -->
-      <div class="col-md-6">
-        <div class="card shadow-sm p-4" style="background: linear-gradient(135deg, #fff8e1, #ffecb3);">
-          <div class="text-center my-5">
-            <h4 class="mb-3">Карточка 4</h4>
-            <p class="text-muted">Здесь будет дополнительная информация</p>
-          </div>
+    </div>
+
+    <!-- 4. Плитка -->
+    <div class="col-md-6 mb-3">
+      <div
+        class="card shadow-sm p-4"
+        style="background: linear-gradient(135deg, #fff8e1, #ffecb3); height: 450px"
+      >
+        <div class="text-center my-5">
+          <h4 class="mb-3">Карточка 4</h4>
+          <p class="text-muted">Здесь будет дополнительная информация</p>
         </div>
       </div>
-  
     </div>
   </div>
+</div>
+
+
+<script>
+
+  //скрипт для подгрузки подкатегорий в зависимости от выбранной категории
+  document.addEventListener("DOMContentLoaded", function () {
+      const categorySelect = document.querySelector("select[name='category']");
+      const subcategorySelect = document.querySelector("select[name='subcategory']");
+  
+      if (!categorySelect || !subcategorySelect) return;
+  
+      const subcategoriesData = {};
+      {% for category in categories %}
+          subcategoriesData["{{ category.id }}"] = [
+              {% for subcategory in category.subcategories.all %}
+                  { id: "{{ subcategory.id }}", name: "{{ subcategory.name }}" },
+              {% endfor %}
+          ];
+      {% endfor %}
+  
+      function updateSubcategories() {
+        const selectedCategoryId = categorySelect.value;
+        subcategorySelect.innerHTML = '<option value="">Выберите подкатегорию</option>';
+        if (!selectedCategoryId) return; 
+        if (subcategoriesData[selectedCategoryId]) {
+            subcategoriesData[selectedCategoryId].forEach(subcategory => {
+                const option = document.createElement("option");
+                option.value = subcategory.id;
+                option.textContent = subcategory.name;
+                subcategorySelect.appendChild(option);
+            });
+        }
+    }
+  
+      categorySelect.addEventListener("change", updateSubcategories);
+      updateSubcategories();
+  });
+</script>
+  
 {% endblock %}
