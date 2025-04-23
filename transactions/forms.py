@@ -21,24 +21,11 @@ class TransactionForm(ModelForm):
         super().__init__(*args, **kwargs)
 
         self.fields['date'].initial = datetime.date.today().strftime('%Y-%m-%d')
-
-        category_id = (self.data.get('category') or 
-                       self.initial.get('category') or 
-                       getattr(self.instance, 'category_id', None))
-        if category_id:
-            try:
-                self.fields['subcategory'].queryset = SubCategory.objects.filter(category_id=int(category_id))
-            except (ValueError, TypeError):
-                self.fields['subcategory'].queryset = SubCategory.objects.all()  
-        else:
-            self.fields['subcategory'].queryset = SubCategory.objects.all()  
-
+        
 class OpeningBalanceForm(ModelForm):
     class Meta:
         model = OpeningBalance
         exclude = ['user', 'date_saldo_update']
-
-
 
 class TransactionUpdateForm(ModelForm):
     class Meta:
@@ -71,12 +58,4 @@ class TransactionUpdateForm(ModelForm):
             raise ValidationError("Сумма транзакции не может быть отрицательной.")
         return amount
     
-   
-
-# class TransactionFilterForm(ModelForm):
-#     id = CharField(label='ID', required=False, widget=TextInput(attrs={'class': 'form-control'}))
-#     date_from = DateField(label='Период с', required=False, initial=datetime.date.today, widget=DateInput(attrs={'type': 'date', 'class': 'form-control'}))
-#     date_to = DateField(label='Период по', required=False, initial=datetime.date.today, widget=DateInput(attrs={'type': 'date', 'class': 'form-control'}))
-#     amount_min = DecimalField(max_digits=12, decimal_places=2, required=False, min_value=0, label='Сумма от', widget=NumberInput(attrs={ 'class': 'form-control'}))
-#     amount_max = DecimalField(max_digits=12, decimal_places=2, required=False, min_value=0, label='Сумма до', widget=NumberInput(attrs={ 'class': 'form-control'}))    
    

@@ -1,9 +1,28 @@
 {% extends 'base.html' %} 
-{% load static humanize %} 
+{% load static humanize %}
+{% load mathfilters %}
 
 {% block title %}Профиль пользователя{% endblock %} 
 
 {% block content %}
+
+{% block extra_css %}
+    <style>
+      .btn-custom {
+        background-color: #6FBF73;
+        border: 2px solid #000;
+        color: #000;
+      }
+  
+      .btn-custom:hover {
+        background-color: #5DAF63;
+        color: #fff;
+      }
+    </style>
+{% endblock %}
+
+
+
 <div class="container-fluid" style="margin-top: -50px;">
   <div class="row g-4">
     <!-- 1. Профиль -->
@@ -47,7 +66,10 @@
               <strong>Следит за финансами с нами:</strong> {{ days_since_joined }} дней
             </li>
             <li class="list-group-item">
-              <strong>Уровень пользователя:</strong> {{ user_level }}
+              <strong>Репутация пользователя:</strong> {{ user_level }}
+            </li>
+            <li class="list-group-item">
+              <strong>Количество активных заданий:</strong> {{ user_task_count }}
             </li>
           </ul>
         </div>
@@ -60,90 +82,92 @@
       </div>
     </div>
 
-    <!-- 2. Плитка -->
     <div class="col-md-6">
-      <div class="card shadow-sm p-4" style="background: linear-gradient(135deg, #e0f7fa, #ccf2f4); height: 660px" >
+      <div class="card shadow-sm p-4" style="background: linear-gradient(135deg,rgb(232, 244, 246),rgb(228, 243, 244)); height: 660px">
         <div class="text-center mb-3">
           <h4 class="mb-2">Добавить транзакцию</h4>
         </div>
-
+    
         <div class="container d-flex justify-content-center">
-          
-          <div class="col-md-10 bg-white p-4 rounded shadow-sm mt-4"  style="height: 430px;">
+          <div class="col-md-10 bg-white p-4 rounded shadow-sm mt-4" style="max-height: 300px;">
             <form method="post">
-              {% csrf_token %} 
+              {% csrf_token %}
               {{ form.as_p }}
-              <div class="d-flex justify-content-center gap-3 mt-3 flex-wrap">
-              <button type="submit"
-                      class="btn btn-outline-success"
-                      style="min-width: 140px;">
-                  Добавить транзакцию
-              </button>
-              </div>
-              <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
-              <a href="{% url 'create_transaction_set' %}"
-                 class="btn btn-outline-secondary"
-                 style="min-width: 140px;">
-                  Добавить группу транзакций
-              </a>
           
-              <a href="{% url 'find_transaction' %}"
-                 class="btn btn-outline-dark"
-                 style="min-width: 140px;">
-                  Изменить транзакцию
-              </a>
-            </div>
-            
-          </form>
-            
+              <div class="d-flex justify-content-center mt-5">
+                <button type="submit" class="btn btn-outline-dark" style="min-width: 140px;">
+                  Добавить транзакцию
+                </button>
+              </div>
+            </form>
           </div>
-        
         </div>
-        
-                
+
+        <div style="margin-top: 60px;"></div>
+       
+        <div class="d-flex flex-column align-items-center mt-4 gap-3">
+          <a href="{% url 'create_transaction_set' %}" class="btn btn-outline-secondary" style="min-width: 140px;">
+            Добавить группу транзакций
+          </a>
+    
+          <a href="{% url 'find_transaction' %}" class="btn btn-outline-secondary" style="min-width: 140px;">
+            Изменить транзакцию
+          </a>
+        </div>
       </div>
     </div>
 
     <!-- 3. Плитка -->
     <div class="col-md-6 mb-3">
-      <div
-        class="card shadow-sm p-3"
-        style="background: linear-gradient(135deg, #f1f8e9, #dcedc8); height: 450px"
-      >
+      <div class="card shadow-sm p-3" style="background: linear-gradient(135deg, #f1f8e9, #dcedc8); height: 450px;">
         <div class="text-center mb-3">
-          <h4 class="mb-2">Активы и пассивы пользователя</h4>
-          <p class="text-muted fs-6">по состоянию на {{ today|date:"d.m.Y" }}</p>
+          <h5 class="mb-1">Активы и пассивы пользователя</h5>
+          <p class="text-muted small">по состоянию на {{ today|date:"d.m.Y" }}</p>
         </div>
-
-        <div style="width: 80%; margin: 0 auto">
-          <ul class="list-group mb-3 fs-6">
-            <li class="list-group-item d-flex justify-content-between">
-              <strong>Сумма наличных денег:</strong>
-              <strong>{{ cash_start_saldo|intcomma }} ₸</strong>
-            </li>
-            <li class="list-group-item d-flex justify-content-between">
-              <strong>Сумма на депозитных счетах:</strong>
-              <strong>{{ deposit_start_saldo|intcomma }} ₸</strong>
-            </li>
-            <li class="list-group-item d-flex justify-content-between">
-              <strong>Сумма в инвестиционном имуществе:</strong>
-              <strong>{{ investment_start_saldo|intcomma }} ₸</strong>
-            </li>
-            <li class="list-group-item d-flex justify-content-between">
-              <strong>Краткосрочный долг:</strong>
-              <strong>{{ short_debt_start_saldo|intcomma }} ₸</strong>
-            </li>
-            <li class="list-group-item d-flex justify-content-between">
-              <strong>Долгосрочный долг:</strong>
-              <strong>{{ long_debt_start_saldo|intcomma }} ₸</strong>
-            </li>
-          </ul>
-        </div>
-
-        <div class="text-center mt-3">
-          <a href="{% url 'balance_update' %}" class="btn btn-outline-dark"
-            >Редактировать начальные данные</a
-          >
+    
+        <div class="table-responsive" style="font-size: 1rem;">
+          <table class="table table-sm table-bordered align-middle text-center mb-0">
+            <thead class="table-light">
+              <tr>
+                <th style="width: 20%;">Наименование</th>
+                <th style="width: 25%;">Начальные <br> данные</th>
+                <th style="width: 25%;">Фактические <br> данные</th>
+                <th style="width: 30%;">Изменение <br><small class="text-muted">(+ увеличение / - уменьшение)</small></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Деньги в наличии</td>
+                <td>₸{{ cash_start_saldo|intcomma }}</td>
+                <td>₸{{ total_cash|intcomma }}</td>
+                <td>₸{{ total_cash|sub:cash_start_saldo|intcomma }}</td>
+              </tr>
+              <tr>
+                <td>Деньги на депозитных счетах</td>
+                <td>₸{{ deposit_start_saldo|intcomma }}</td>
+                <td>₸{{ total_deposit|intcomma }}</td>
+                <td>₸{{ total_deposit|sub:deposit_start_saldo|intcomma }}</td>
+              </tr>
+              <tr>
+                <td>Инвестиционное имущество</td>
+                <td>₸{{ investment_start_saldo|intcomma }}</td>
+                <td>₸{{ total_invest|intcomma }}</td>
+                <td>₸{{ total_invest|sub:investment_start_saldo|intcomma }}</td>
+              </tr>
+              <tr>
+                <td>Краткосрочный долг</td>
+                <td>₸{{ short_debt_start_saldo|intcomma }}</td>
+                <td>₸{{ total_short_debt|intcomma }}</td>
+                <td>₸{{ total_short_debt|sub:short_debt_start_saldo|intcomma }}</td>
+              </tr>
+              <tr>
+                <td>Долгосрочный долг</td>
+                <td>₸{{ long_debt_start_saldo|intcomma }}</td>
+                <td>₸{{ total_long_debt|intcomma }}</td>
+                <td>₸{{ total_long_debt|sub:long_debt_start_saldo|intcomma }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -154,11 +178,105 @@
         class="card shadow-sm p-4"
         style="background: linear-gradient(135deg, #fff8e1, #ffecb3); height: 450px"
       >
-        <div class="text-center my-5">
-          <h4 class="mb-3">Карточка 4</h4>
-          <p class="text-muted">Здесь будет дополнительная информация</p>
+      <div class="text-center mb-3">
+        <h5 class="mb-1">Финансовый результат пользователя</h5>
+        <p class="text-muted small">по состоянию на {{ today|date:"d.m.Y" }}</p>
+      </div>
+      
+      <div class="table-responsive" style="font-size: 1rem;">
+        <table class="table table-sm table-bordered align-middle text-center mb-0">
+          <thead class="table-light">
+                <tr>
+                  <th style="width: 20%;">Статья</th>
+                  <th style="width: 23%;">План</th>
+                  <th style="width: 25%;">Факт</th>
+                  <th style="width: 30%;">Отклонение<br><small class="text-muted">(+ неосвоено / - превышено)</small></th>
+                </tr>
+              </thead>
+              <tbody>
+               
+                <tr class="table-success">
+                  <td style="height: 60px;">Доходы</td>
+                  <td>₸{{ total_incomes.total_planned_sum|intcomma }}</td>
+                  <td>₸{{ total_incomes.total_actual_sum|intcomma }}</td>
+                  <td>₸{{ total_incomes.total_diff_sum|intcomma }}</td>
+                </tr>
+      
+               
+                <tr class="table-danger">
+                  <td style="height: 60px;">Расходы</td>
+                  <td>₸{{ total_expenses.total_planned_sum|intcomma }}</td>
+                  <td>₸{{ total_expenses.total_actual_sum|intcomma }}</td>
+                  <td>₸{{ total_expenses.total_diff_sum|intcomma }}</td>
+                </tr>
+      
+                
+                <tr class="table-info">
+                  <td style="height: 60px;"><strong>Финансовый результат</strong></td>
+                  <td><strong>₸{{ total_result.0|intcomma }}</strong></td>
+                  <td><strong>₸{{ total_result.1|intcomma }}</strong></td>
+                  <td><strong>₸{{ total_result.2|intcomma}}</strong></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
+</div>
+
+
+ <!-- Приветствие при входе на сайт -->
+<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content shadow" style="border-radius: 16px;">
+      
+      <div class="modal-header bg-light">
+        <h5 class="modal-title text-dark fw-semibold" id="infoModalLabel">
+          Добро пожаловать в приложение Financetracker!
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+      </div>
+      
+      <div class="modal-body text-center px-4 py-4">
+        <p class="fs-6 text-dark">
+          <strong> Уважаемый пользователь</strong>, мы рады приветствовать Вас в нашем приложении Financetracker для эффективного управления <br> личными финансами.
+        </p>
+        
+        <p class="text-dark">
+          Если Вы пользуетесь приложением впервые, рекомендуем ознакомиться с <a href= {% url "documentation" %}> <strong>официальной документацией</strong> </a> официальной документацией и начать работу с заполнения <strong> начальных финансовых данных</strong> в разделе "Редактировать личные данные". <br>
+          Эти данные станут основой для оценки Вашего прогресса, формирования персональных рекомендаций и присвоения уровней финансовой эффективности внутри приложения. Вы сможете отслеживать динамику своих результатов и при желании делиться ими со своими друзьями. <br> 
+        </p>
+
+        <p class="fs-6 text-dark"> 
+          <strong> Обратите внимание:</strong> при изменении начальных финансовых данных в процессе использования приложения, система автоматически сбросит все Ваши накопленные достижения, связанные с предыдущими параметрами. Рекомендуем внимательно заполнять свою информацию. <br>
+        </p>
+        </p>
+        
+        <p class="fw-bold">
+          Благодарим за выбор нашего приложения. Готовы начать?
+        </p>
+      </div>
+
+      <div class="modal-footer justify-content-between bg-light">
+        <div class="d-flex align-items-center">
+            <input class="form-check-input me-2" type="checkbox" id="doNotShowAgain">
+            <label class="form-check-label" for="doNotShowAgain">
+                Больше не показывать данное сообщение
+            </label>
+        </div>
+    
+        <button type="button" class="btn btn-custom px-4" data-bs-dismiss="modal">
+            Приступим
+        </button>
+    </div>
+      
+      
+      
+      
+      
+        
+    </div>
+
     </div>
   </div>
 </div>
@@ -199,6 +317,27 @@
       categorySelect.addEventListener("change", updateSubcategories);
       updateSubcategories();
   });
+
+  //скрипт для модального окна
+  document.addEventListener("DOMContentLoaded", function () {
+    const shouldShowModal = localStorage.getItem("hideInfoModal") !== "true";
+    const modalElement = document.getElementById("infoModal");
+
+    if (shouldShowModal) {
+      const modal = new bootstrap.Modal(modalElement);
+      modal.show();
+    }
+
+    document.getElementById("doNotShowAgain").addEventListener("change", function () {
+      if (this.checked) {
+        localStorage.setItem("hideInfoModal", "true");
+      } else {
+        localStorage.removeItem("hideInfoModal");
+      }
+    });
+  });
+
+
 </script>
   
 {% endblock %}

@@ -23,7 +23,7 @@
         {% endfor %}
       </div>
 
-      <button type="button" class="btn btn-outline-primary" id="add-form">Добавить форму</button>
+      <button type="button" class="btn btn-outline-secondary" id="add-form">Добавить форму</button>
       <br /><br />
 
       <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
@@ -69,9 +69,7 @@
                     subcategorySelect.appendChild(option);
                 });
     
-                subcategorySelect.value = subcategorySelect.options.length > 1
-                    ? subcategorySelect.options[1].value
-                    : "";
+                subcategorySelect.value = ""; 
             }
     
             setTimeout(() => subcategorySelect.dispatchEvent(new Event("change")), 10);

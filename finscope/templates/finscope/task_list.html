@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block title %}FinScope{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <div class="text-center mb-4">
+    <h2 class="fw-bold">FinScope - открой для себя мир знаний о финансах, <br> развивайся с нами с каждым новым шагом!</h2>
+    <p class="text-muted">Выберите задания для выполнения. Выбранные задачи появятся в вашем списке.</p>
+  </div>
+
+  <!-- Раздел доступных задач -->
+  <h4 class="mb-4">Доступные задания</h4>
+  <form method="post" action="{% url 'task_assign_multiple' %}">
+    {% csrf_token %}
+    <div class="row g-4">
+      {% for task in tasks %}
+        <div class="col-md-6">
+          <div class="card shadow-sm h-100 border-0">
+            <div class="card-body">
+              <h5 class="card-title d-flex justify-content-between align-items-center">
+                {{ task.name }}
+                {% if task.finscore %}
+                  <span class="badge bg-primary">{{ task.finscore }} баллов</span>
+                {% endif %}
+              </h5>
+              <p class="card-text text-muted mb-2">{{ task.description|truncatechars:120 }}</p>
+              <p class="text-sm text-muted mb-1">
+                <i class="bi bi-calendar-event"></i> До {{ task.deadline|date:"d.m.Y" }}
+              </p>
+              <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="task-{{ task.id }}" name="selected_tasks" value="{{ task.id }}">
+                <label class="form-check-label" for="task-{{ task.id }}">Добавить</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-4">
+      <button type="submit" class="btn btn-dark" style="min-width: 140px; background-color: #2C3E50; color: white;">Добавить выбранные</button>
+    </div>
+  </form>
+
+  <!-- Раздел текущих задач -->
+  <h4 class="mt-5">Мои задания</h4>
+  {% if user_tasks %}
+    <form method="post" action="{% url 'task_unassign_multiple' %}">
+      {% csrf_token %}
+      <div class="row g-4">
+        {% for task in user_tasks %}
+          <div class="col-md-6">
+            <div class="card shadow-sm h-100 border-0">
+              <div class="card-body">
+                <h5 class="card-title d-flex justify-content-between align-items-center">
+                  {{ task.name }}
+                  {% if task.finscore %}
+                    <span class="badge bg-primary">{{ task.finscore }} баллов</span>
+                  {% endif %}
+                </h5>
+                <p class="card-text text-muted mb-2">{{ task.description|truncatechars:120 }}</p>
+                <p class="text-sm text-muted mb-1">
+                  <i class="bi bi-calendar-event"></i> До {{ task.deadline|date:"d.m.Y" }}
+                </p>
+                <div class="form-check">
+                  <input type="checkbox" class="form-check-input" id="task-{{ task.id }}" name="unselected_tasks" value="{{ task.id }}">
+                  <label class="form-check-label" for="task-{{ task.id }}">Убрать</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      <div class="text-center mt-4">
+        <button type="submit" class="btn btn-dark" style="min-width: 140px; background-color:rgb(127, 19, 35); color: white;">Удалить выбранные</button>
+      </div>
+    </form>
+  {% else %}
+    <p class="text-muted">У вас нет текущих задач.</p>
+  {% endif %}
+</div>
+{% endblock %}
+
+
+
+

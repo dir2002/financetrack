@@ -14,13 +14,16 @@ class OpeningBalance(models.Model):
     short_debt_start_saldo = models.DecimalField(max_digits=12, decimal_places=2, default=0, blank=True, verbose_name="Сумма долгов с возвратом в течение 12 мес")
     long_debt_start_saldo = models.DecimalField(max_digits=12, decimal_places=2, default=0, blank=True, verbose_name="Сумма долгов с возвратом в течение более 12 мес")
     date_saldo_update = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"{self.user} - {self.cash_start_saldo} - {self.investment_start_saldo} - {self.short_debt_start_saldo} - {self.long_debt_start_saldo}"
     
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True, verbose_name="Категория")
 
     def __str__(self):
         return self.name
-
+     
 class SubCategory(models.Model):
     name = models.CharField(max_length=100, verbose_name="Подкатегория", default="Без названия")
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='subcategories')
@@ -38,4 +41,4 @@ class Transaction(models.Model):
     description = models.TextField(blank=True, verbose_name="Описание транзакции")
 
     def __str__(self):
-        return f"{self.amount} - {self.category} - {self.subcategory}"
+        return f"{self.user} - {self.amount} - {self.category} - {self.subcategory}"

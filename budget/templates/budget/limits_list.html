@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% load humanize %}
+{% load static %}
+
+{% block title %}Финплан{% endblock %}
+
+{% block content %}
+{% block extra_css %}
+    <style>
+    .pagination .page-link {
+        background-color: white;
+        color: #2C3E50;
+        border: none;
+        margin: 0 2px;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #2C3E50;
+        color: white;
+    }
+
+    .pagination .page-item.disabled .page-link {
+        background-color: white;
+        color: #2C3E50;
+        pointer-events: none;
+    }
+    </style>
+{% endblock %}
+
+
+
+<div class="container mt-5">
+    <form method="get" class="mb-4">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label for="category" class="form-label">Категория</label>
+                <select name="category" id="category" class="form-select">
+                    <option value="">Все категории</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}" {% if request.GET.category == category.id|stringformat:"s" %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label for="subcategory" class="form-label">Подкатегория</label>
+                <select name="subcategory" id="subcategory" class="form-select">
+                        <option value="">Все подкатегории</option>
+                        {% for category in categories %}
+                            {% for subcategory in category.subcategories.all %}
+                                <option value="{{ subcategory.id }}" data-category="{{ category.id }}" 
+                                        {% if request.GET.subcategory == subcategory.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ subcategory.name }}
+                                </option>
+                            {% endfor %}
+                        {% endfor %}
+                </select>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-dark" style="min-width: 140px; background-color: #2C3E50; color: white;">
+                    Поиск
+                </button>
+            </div>
+
+            <div class="col-auto">
+                <a href="{% url 'create_limits' %}" class="btn btn-outline-secondary" style="min-width: 140px; border-color: #2C3E50; color: #2C3E50">
+                    Создать статью
+                </a>
+            </div>
+            <div class="col-auto">
+                <a href="{% url 'find_limit' %}" class="btn btn-outline-secondary" style="min-width: 140px; border-color: #2C3E50; color: #2C3E50">
+                    Редактировать статью
+                </a>
+            </div>
+            
+
+        </div>
+
+        <div class="row g-3 align-items-end mt-2">
+            <div class="col-md-3">
+                <label class="form-label">Дата завершения периода</label>
+                <div class="input-group">
+                    <input type="date" name="start_date" class="form-control" value="{{ request.GET.start_date }}">
+                    <span class="input-group-text">—</span>
+                    <input type="date" name="end_date" class="form-control" value="{{ request.GET.end_date }}">
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Сумма (мин/макс)</label>
+                <div class="input-group">
+                    <input type="number" name="min_limit_amount" class="form-control" value="{{ request.GET.min_limit_amount }}">
+                    <span class="input-group-text">—</span>
+                    <input type="number" name="max_limit_amount" class="form-control" value="{{ request.GET.max_limit_amount }}">
+                </div>
+            </div>
+
+            
+            <div class="col-auto">
+                <a href="{% url 'create_budget' %}" class="btn btn-dark"
+                   style="min-width: 228px; background-color: #34495E; color: white; border: none;">
+                    Просмотреть личный бюджет
+                </a>
+            </div>
+            
+
+        </div>
+    </form>
+
+    <h2 class="mb-4">Перечень статей бюджета</h2>
+
+    <nav aria-label="Page navigation" class="d-flex justify-content-center mt-4">
+        <ul class="pagination">
+            {% if limits.has_previous %}
+                <li class="page-item">
+                    <a class="page-link bg-white text-black" href="?page=1" aria-label="Первая">
+                        <span aria-hidden="true">&laquo;&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link bg-white text-black" href="?page={{ limits.previous_page_number }}" aria-label="Назад">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link bg-white text-black">&laquo;&laquo;</span>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link bg-white text-black">&laquo;</span>
+                </li>
+            {% endif %}
+    
+            {% for num in limits.paginator.page_range %}
+                {% if limits.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link bg-black text-white">{{ num }}</span>
+                    </li>
+                {% elif num >= limits.number|add:"-2" and num <= limits.number|add:"2" %}
+                    <li class="page-item">
+                        <a class="page-link bg-white text-black" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+    
+            {% if limits.has_next %}
+                <li class="page-item">
+                    <a class="page-link bg-white text-black" href="?page={{ limits.next_page_number }}" aria-label="Вперёд">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link bg-white text-black" href="?page={{ limits.paginator.num_pages }}" aria-label="Последняя">
+                        <span aria-hidden="true">&raquo;&raquo;</span>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link bg-white text-black">&raquo;</span>
+                </li>
+                <li class="page-item disabled">
+                    <span class="page-link bg-white text-black">&raquo;&raquo;</span>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <table class="table table-bordered table-hover align-middle text-center border-light">
+        <thead style="background-color: #2C3E50; color: white;">
+            <tr>
+                <th>ID</th>
+                <th>Категория</th>
+                <th>Подкатегория</th>
+                <th>Планируемая сумма</th>
+                <th>Фактическая сумма</th>
+                <th>Дата начала периода</th>
+                <th>Дата завершения периода</th>
+                <th>Отклонение<br><small class="text-muted">(+неосвоено/ -превышено)</small></th>
+                <th>Осталось дней</th>
+                <th>Статус</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for limit in limits %}
+            <tr>
+                <td>{{ limit.id }}</td>
+                <td>{{ limit.category.name }}</td>
+                <td>{{ limit.subcategory.name }}</td>
+                <td>{{ limit.limit_amount|intcomma }}</td>
+                <td>{{ limit.calculate_actual_amount|intcomma }}</td>
+                <td>{{ limit.start_date|date:"d.m.Y" }}</td>
+                <td>{{ limit.end_date|date:"d.m.Y" }}</td>
+                <td>{{ limit.calculate_limit_saldo_amount|intcomma }}</td>
+                <td>{{ limit.calculate_days }}</td>
+                <td>{{ limit.limit_status }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8" class="text-muted">Статьи отсутствуют.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    
+</div>
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const categorySelect = document.getElementById("category");
+        const subcategorySelect = document.getElementById("subcategory");
+
+        function updateSubcategories() {
+            const selectedCategory = categorySelect.value;
+
+            subcategorySelect.querySelectorAll("option").forEach(option => {
+                if (!option.hasAttribute("data-category") || option.getAttribute("data-category") === selectedCategory || option.value === "") {
+                    option.style.display = "block";
+                } else {
+                    option.style.display = "none";
+                }
+            });
+        }
+
+        categorySelect.addEventListener("change", updateSubcategories);
+        updateSubcategories();
+    });
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const filterCheckbox = document.getElementById("active-filter");
+        filterCheckbox.addEventListener("change", function () {
+            let checked = this.checked;
+            document.querySelectorAll(".limit-item").forEach(function (item) {
+                console.log("Статус элемента:", item.dataset.status);  // ✅ Проверяем, какие статусы есть
+                if (checked && item.dataset.status !== "Действует") {
+                    item.style.display = "none";  // ❌ Скрываем
+                } else {
+                    item.style.display = "";  // ✅ Показываем
+                }
+            });
+        });
+    
+        // 🚀 По умолчанию ВСЕ элементы показываются
+        filterCheckbox.dispatchEvent(new Event("change"));
+    });
+</script>
+{% endblock %}

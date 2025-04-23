@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load mathfilters %}
+{% load humanize %}
+
+{% block content %}
+<div class="container mt-2">
+  <div class="text-center mb-4">
+    <h4 class="fw-semibold text-dark">
+      Бюджет пользователя <br> по состоянию на {{ today|date:"d.m.Y" }}
+    </h4>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-sm table-bordered text-center align-middle shadow-sm">
+      <thead style="background-color: #2C3E50; color: white;">
+        <tr>
+          <th>Статьи</th>
+          <th>План</th>
+          <th>Факт</th>
+          <th>Отклонение <br><small class="text-muted">(+ неосвоено / - превышено)</small></th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Доходы -->
+        <tr style="background-color: #d4edda;">
+          <td><strong>Доходы</strong></td>
+          <td><strong>₸{{ total_incomes.total_planned_sum|intcomma }}</strong></td>
+          <td><strong>₸{{ total_incomes.total_actual_sum|intcomma }}</strong></td>
+          <td><strong>₸{{ total_incomes.total_diff_sum|intcomma }}</strong></td>
+        </tr>
+
+        {% for item in incomes_summary %}
+        <tr>
+          <td>{{ item.name }}</td>
+          <td>₸{{ item.total_planned|intcomma }}</td>
+          <td>₸{{ item.total_actual|intcomma }}</td>
+          <td>₸{{ item.difference|intcomma }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" class="text-muted">Нет данных по доходам.</td>
+        </tr>
+        {% endfor %}
+
+        <!-- Расходы -->
+        <tr style="background-color: #f8d7da;">
+          <td><strong>Расходы</strong></td>
+          <td><strong>₸{{ total_expenses.total_planned_sum|intcomma }}</strong></td>
+          <td><strong>₸{{ total_expenses.total_actual_sum|intcomma }}</strong></td>
+          <td><strong>₸{{ total_expenses.total_diff_sum|intcomma }}</strong></td>
+        </tr>
+
+        {% for item in expenses_summary %}
+        <tr>
+          <td>{{ item.name }}</td>
+          <td>₸{{ item.total_planned|intcomma }}</td>
+          <td>₸{{ item.total_actual|intcomma }}</td>
+          <td>₸{{ item.difference|intcomma }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" class="text-muted">Нет данных по расходам.</td>
+        </tr>
+        {% endfor %}
+
+        <!-- Финансовый результат -->
+        <tr style="background-color: #d1ecf1;">
+          <td><strong>Финансовый результат</strong></td>
+          <td><strong>₸{{ total_result_planned|intcomma }}</strong></td>
+          <td><strong>₸{{ total_result_actual|intcomma }}</strong></td>
+          <td><strong>₸{{ total_result_diff|intcomma }}</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="text-center mb-4 mt-4">
+    <a href="{% url 'limits_list' %}" class="btn btn-dark" style="min-width: 150px; background-color: #2C3E50; color: white;">Назад</a>
+  </div>
+</div>
+{% endblock %}

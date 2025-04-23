@@ -6,7 +6,7 @@
 {% block title %}Редактирование транзакции{% endblock %}
 
 {% block content %}
-    <h3 class="mb-4 text-center">Редактирование транзакции</h3>
+    <h3 class="mb-4 text-center">Редактирование/удаление транзакции</h3>
     
     <div class="container d-flex justify-content-center">
         <div class="col-md-8 bg-white p-4 rounded shadow-sm">
@@ -37,7 +37,7 @@
                         <a href="{% url 'profile' %}"
                            class="btn btn-outline-dark"
                            style="min-width: 140px;">
-                            Назад
+                            Отмена
                         </a>
                     </div>
             </form>
@@ -54,7 +54,7 @@
                         
              
                 <a href="{% url 'transactions_list' %}"
-                   class="btn btn-outline-primary"
+                   class="btn btn-outline-secondary"
                    style="min-width: 140px;">
                     Поиск
                 </a>

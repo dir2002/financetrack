@@ -53,12 +53,10 @@ class EmailActivation(models.Model):
     is_active = models.BooleanField(default=False)
         
     def send_email(self):
-        subject = 'Подтверждение email'
-        message = f'Подтвердите свой email, перейдя по ссылке http://localhost:8000/users/activate/{self.token}/'
-        from_email = 'admin@localhost'
+        subject = 'Подтверждение электронной почты FinanceTracker'
+        message = f'Пожалуйста, подтвердите свой email, перейдя по следующей ссылке http://localhost:8000/users/activate/{self.token}/'
+        from_email = 'f1nancetracker@yandex.kz'
         recipient_list = [self.user.email]
-
-        print(f"Токен для подтверждения почты: {self.token}")
 
         send_mail(subject, message, from_email, recipient_list)
 
