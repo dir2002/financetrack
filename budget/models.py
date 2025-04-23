@@ -37,6 +37,3 @@ class BudgetLimit(models.Model):
     def limit_status(self):
         return "Не действует" if self.end_date < date.today() else "Действует"
 
-
-
-

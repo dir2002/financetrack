@@ -98,8 +98,8 @@ def profile_view(request):
 
     user_level = (
         'Транжира' if days_since_joined <= 3 else
-        'Финансовый теоретик' if days_since_joined <= 5 else
-        'Коммерсант' if days_since_joined <= 10 else
+        'Финансовый теоретик' if days_since_joined <= 10 else
+        'Коммерсант' if days_since_joined <= 20 else
         'Финансовый гуру'
     )
     try:
