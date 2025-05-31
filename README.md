@@ -36,7 +36,7 @@
 
 1. Клонируй проект:
    ```bash
-   git clone https://github.com/ 
+   git clone https://github.com/dir2002/financetrack.git
    cd financetracker
    ```
 
@@ -99,7 +99,7 @@
 
 ---
 
-## 🛠 Используемые технологии
+## 🛠 Используемый стек технологий
 
 - Python 3.13
 - Django 5+
