@@ -10,6 +10,6 @@ router.register('tasks', TaskViewSet)
 urlpatterns = [
     path("api/", include(router.urls)),
     path('tasks/', task_list, name='task_list'),
-    path('tasks/assign/', task_assign_multiple, name='task_assign_multiple'),
-    path('tasks/unassign/', task_unassign_multiple, name='task_unassign_multiple'),
+    path('tasks/assign/', task_assign_multiple, name='task_assign_multiple'), # type: ignore
+    path('tasks/unassign/', task_unassign_multiple, name='task_unassign_multiple'), # type: ignore
 ]

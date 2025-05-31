@@ -116,17 +116,18 @@ USE_L10N = True
 
 USE_TZ = True
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-STATICFILES_DIRS = [BASE_DIR / 'static']
+STATICFILES_DIRS = [
+    BASE_DIR / "static",  
+]
 
 MEDIA_URL = '/media/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
 
 REST_FRAMEWORK = {
@@ -214,12 +215,3 @@ EMAIL_USE_TLS = config("EMAIL_USE_TLS", cast=bool)
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 SERVER_EMAIL = EMAIL_HOST_USER
-
-from decouple import config
-
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')  
-AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')  
-AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')  
-AWS_S3_ENDPOINT_URL = config('AWS_S3_ENDPOINT_URL')  
-MEDIA_URL = f"https://storage.yandexcloud.net/{AWS_STORAGE_BUCKET_NAME}/"

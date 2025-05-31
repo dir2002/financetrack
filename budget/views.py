@@ -1,9 +1,8 @@
 import logging
 from datetime import date
 from django.db import IntegrityError
-from django.utils import timezone
-from django.forms import  DecimalField, ValidationError, modelformset_factory
-from django.shortcuts import get_object_or_404, render, redirect
+from django.forms import  DecimalField, modelformset_factory
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Sum
@@ -13,12 +12,13 @@ from django.db.models import Sum, F, Value, DecimalField, Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models.functions import Coalesce
 from django.contrib import messages
-from django.db.models import OuterRef, Subquery
+from django.db.models import ExpressionWrapper
+from decimal import Decimal
 
 
 from .models import BudgetLimit
 from .forms import BudgetLimitForm, BudgetLimitUpdateForm
-from transactions.models import Category, SubCategory, Transaction
+from transactions.models import Category, SubCategory
 
 logger = logging.getLogger('django')
 
@@ -147,7 +147,7 @@ def find_limit_view(request):
         else:
             limit = BudgetLimit.objects.filter(id=limit_id, user=request.user).first()
             if limit:
-                return redirect("limit_update", pk=limit.id)  
+                return redirect("limit_update", pk=limit.pk)  
             else:
                 error_message = "Ошибка: Статья не найдена. Повторите попытку."
 
@@ -155,44 +155,61 @@ def find_limit_view(request):
         "error_message": error_message})
 
 # представление для создания бюджета
-
 @login_required
 def create_budget_view(request):
     today = date.today()
 
-    # 🔹 Определяем фильтр пользователя
     user_filter = Q(budgetlimit__user=request.user)
     transaction_filter = Q(transaction__user=request.user)
 
-    # 🔹 Запрашиваем данные сразу с фильтрацией
     incomes_summary = SubCategory.objects.filter(category__pk=1).annotate(
-    total_planned=Coalesce(Sum("budgetlimit__limit_amount", filter=user_filter, distinct=True), Value(0), output_field=DecimalField()),
-    total_actual=Coalesce(Sum("transaction__amount", filter=transaction_filter), Value(0), output_field=DecimalField())
+        total_planned=Coalesce(
+            Sum("budgetlimit__limit_amount", filter=user_filter, distinct=True),
+            Value(Decimal('0.00')),
+            output_field=DecimalField()
+        ),
+        total_actual=Coalesce(
+            Sum("transaction__amount", filter=transaction_filter),
+            Value(Decimal('0.00')),
+            output_field=DecimalField()
+        ),
+    ).annotate(
+        difference=ExpressionWrapper(
+            F("total_planned") - F("total_actual"),
+            output_field=DecimalField()
+        )
     )
 
     expenses_summary = SubCategory.objects.filter(category__pk=2).annotate(
-        total_planned=Coalesce(Sum("budgetlimit__limit_amount", filter=user_filter, distinct=True), Value(0), output_field=DecimalField()),
-        total_actual=Coalesce(Sum("transaction__amount", filter=transaction_filter), Value(0), output_field=DecimalField())
+        total_planned=Coalesce(
+            Sum("budgetlimit__limit_amount", filter=user_filter, distinct=True),
+            Value(Decimal('0.00')),
+            output_field=DecimalField()
+        ),
+        total_actual=Coalesce(
+            Sum("transaction__amount", filter=transaction_filter),
+            Value(Decimal('0.00')),
+            output_field=DecimalField()
+        ),
+    ).annotate(
+        difference=ExpressionWrapper(
+            F("total_planned") - F("total_actual"),
+            output_field=DecimalField()
+        )
     )
 
-    # 🔹 Агрегируем итоговые суммы
     total_incomes = incomes_summary.aggregate(
         total_planned_sum=Sum("total_planned"),
         total_actual_sum=Sum("total_actual"),
-        total_diff_sum=F("total_planned_sum") - F("total_actual_sum")  # ✅ Считаем разницу сразу!
+        total_diff_sum=Sum("difference")
     )
 
     total_expenses = expenses_summary.aggregate(
         total_planned_sum=Sum("total_planned"),
         total_actual_sum=Sum("total_actual"),
-        total_diff_sum=F("total_planned_sum") - F("total_actual_sum")
+        total_diff_sum=Sum("difference")
     )
 
-    # 🔹 Проверяем, есть ли ошибки в данных
-    if not total_incomes["total_planned_sum"] or not total_expenses["total_planned_sum"]:
-        logger.warning("Некорректные данные в `total_incomes` или `total_expenses`")
-
-    # 🔹 Убеждаемся, что `None` заменены на `0`
     total_result_planned = (total_incomes.get("total_planned_sum") or 0) - (total_expenses.get("total_planned_sum") or 0)
     total_result_actual = (total_incomes.get("total_actual_sum") or 0) - (total_expenses.get("total_actual_sum") or 0)
     total_result_diff = (total_incomes.get("total_diff_sum") or 0) - (total_expenses.get("total_diff_sum") or 0)

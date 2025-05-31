@@ -1,11 +1,9 @@
 from django.shortcuts import redirect, render
+from django.contrib.auth.decorators import login_required
 from rest_framework import permissions
 from rest_framework.viewsets import ModelViewSet
-from django.contrib.auth.decorators import login_required
 from rest_framework.response import Response
 from rest_framework import status
-from django.http import JsonResponse
-from django.views.decorators.http import require_POST
 
 from .models import Task
 from .serializers import TaskSerializer
@@ -27,31 +25,35 @@ class TaskViewSet(ModelViewSet):
 @login_required
 def task_assign_multiple(request):
     if request.method == "POST":
-        selected_tasks = request.POST.getlist('selected_tasks')  # Получаем список выбранных задач
+        selected_tasks = request.POST.getlist('selected_tasks')
         for task_id in selected_tasks:
             try:
                 task = Task.objects.get(id=task_id)
-                task.task_participants.add(request.user)  # Добавляем пользователя к задаче
+                task.task_participants.add(request.user)
             except Task.DoesNotExist:
                 continue
-        return redirect('task_list')  # Перезагружаем страницу
+        return redirect('task_list')
+    return redirect('task_list')
+
 
 @login_required
 def task_unassign_multiple(request):
     if request.method == "POST":
-        unselected_tasks = request.POST.getlist('unselected_tasks')  # Получаем задачи для удаления
+        unselected_tasks = request.POST.getlist('unselected_tasks')
         for task_id in unselected_tasks:
             try:
                 task = Task.objects.get(id=task_id)
-                task.task_participants.remove(request.user)  # Убираем пользователя из участников задачи
+                task.task_participants.remove(request.user)
             except Task.DoesNotExist:
                 continue
-        return redirect('task_list')  # Перезагружаем страницу
+        return redirect('task_list')
+    return redirect('task_list')
+
 
 @login_required
 def task_list(request):
-    tasks = Task.objects.filter(is_active=True).exclude(task_participants=request.user)  # Доступные задачи
-    user_tasks = request.user.tasks.all()  # Текущие задачи пользователя
+    tasks = Task.objects.filter(is_active=True).exclude(task_participants=request.user)
+    user_tasks = request.user.tasks.all() 
     context = {
         'tasks': tasks,
         'user_tasks': user_tasks,
